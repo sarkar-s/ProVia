@@ -1,7 +1,7 @@
 # ProVia
 
-A collection of jupyter notebooks to analyze cell proliferation and viability measurements.
+A collection of jupyter notebooks to analyze cell proliferation and viability measurements. Cell proliferation data is modeled using the Gompertz function:
 
 ```math
-a^b + b^2 = c^2
+N = k e^{-e^{a-bt}}
 ```
