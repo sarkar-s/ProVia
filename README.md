@@ -6,7 +6,7 @@ A collection of jupyter notebooks to analyze cell proliferation and viability me
 N = k e^{-e^{a-bt}}
 ```
 
-<center><img src="./docs/gompertz-demo.png" height="350"></center>
+<center><img src="./docs/gompertz-demo.png"></center>
 
 ProVia determines the inflection points during proliferation and identifies their sensitivity to cell viability assays (AO/DAPI, ATP, and Annexin).
 
