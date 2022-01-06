@@ -1,0 +1,240 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>AODAPI viability and inflection points &#8212; ProVia 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="functions" href="functions.html" />
+    <link rel="prev" title="Analysis of inflection points" href="Plot_inflection_points.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="functions.html" title="functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Plot_inflection_points.html" title="Analysis of inflection points"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ProVia 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">AODAPI viability and inflection points</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="aodapi-viability-and-inflection-points">
+<h1>AODAPI viability and inflection points<a class="headerlink" href="#aodapi-viability-and-inflection-points" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="k">as</span> <span class="nn">optim</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span><span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">st</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">t</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rcParams</span>
+</pre></div>
+</div>
+<p><strong>Read viability and T2 inflection points</strong></p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="n">data_directory</span> <span class="o">=</span> <span class="s1">&#39;./data/&#39;</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">data_directory</span><span class="p">)</span>
+
+<span class="n">aodapi_T2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;AODAPI-T2paired-Day1.csv&#39;</span><span class="p">)</span>
+
+<span class="n">column_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">aodapi_T2</span><span class="p">)</span>
+
+<span class="n">aodapis</span><span class="p">,</span> <span class="n">t2s</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">column_names</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">&#39;T2&#39;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+        <span class="n">t2s</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">aodapi_T2</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">t2s</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="s1">&#39;AODAPI&#39;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+        <span class="n">aodapis</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">aodapi_T2</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">aodapis</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Study1_AODAPI</span>        <span class="p">[</span><span class="mf">91.05</span><span class="p">,</span> <span class="mf">90.42</span><span class="p">,</span> <span class="mf">85.12</span><span class="p">,</span> <span class="mf">78.8</span><span class="p">,</span> <span class="mf">77.35</span><span class="p">,</span> <span class="mf">65.49</span><span class="p">,</span> <span class="mf">62.27</span><span class="p">]</span>
+<span class="n">Study1_T2</span>    <span class="p">[</span><span class="mf">74.93</span><span class="p">,</span> <span class="mf">122.59</span><span class="p">,</span> <span class="mf">104.11</span><span class="p">,</span> <span class="mf">164.45</span><span class="p">,</span> <span class="mf">150.77</span><span class="p">,</span> <span class="mf">193.53</span><span class="p">,</span> <span class="mf">443.6</span><span class="p">]</span>
+<span class="n">Study3_AODAPI</span>        <span class="p">[</span><span class="mf">96.18</span><span class="p">,</span> <span class="mf">94.71</span><span class="p">,</span> <span class="mf">89.54</span><span class="p">,</span> <span class="mf">83.76</span><span class="p">,</span> <span class="mf">71.59</span><span class="p">,</span> <span class="mf">68.47</span><span class="p">]</span>
+<span class="n">Study3_T2</span>    <span class="p">[</span><span class="mf">102.31</span><span class="p">,</span> <span class="mf">80.83</span><span class="p">,</span> <span class="mf">85.02</span><span class="p">,</span> <span class="mf">126.79</span><span class="p">,</span> <span class="mf">147.27</span><span class="p">,</span> <span class="mf">178.04</span><span class="p">]</span>
+<span class="n">Study4_AODAPI</span>        <span class="p">[</span><span class="mf">97.09</span><span class="p">,</span> <span class="mf">91.58</span><span class="p">,</span> <span class="mf">77.33</span><span class="p">,</span> <span class="mf">61.27</span><span class="p">]</span>
+<span class="n">Study4_T2</span>    <span class="p">[</span><span class="mf">93.02</span><span class="p">,</span> <span class="mf">113.0</span><span class="p">,</span> <span class="mf">193.43</span><span class="p">,</span> <span class="mf">212.21</span><span class="p">]</span>
+<span class="n">Study5_AODAPI</span>        <span class="p">[</span><span class="mf">91.72</span><span class="p">,</span> <span class="mf">94.21</span><span class="p">,</span> <span class="mf">63.61</span><span class="p">,</span> <span class="mf">64.17</span><span class="p">]</span>
+<span class="n">Study5_T2</span>    <span class="p">[</span><span class="mf">71.64</span><span class="p">,</span> <span class="mf">72.14</span><span class="p">,</span> <span class="mf">159.66</span><span class="p">,</span> <span class="mf">190.13</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>Fit :math:`log[mathrm{AODAPI}]`-vs-T2.</strong></p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">aodapis</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">+=</span> <span class="n">aodapis</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">t2s</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="n">y</span> <span class="o">+=</span> <span class="n">t2s</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+
+<span class="n">dof</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">linregress</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">y</span><span class="p">),</span><span class="n">alternative</span><span class="o">=</span><span class="s1">&#39;two-sided&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LinregressResult</span><span class="p">(</span><span class="n">slope</span><span class="o">=-</span><span class="mf">2.386117710101085</span><span class="p">,</span> <span class="n">intercept</span><span class="o">=</span><span class="mf">4.3406484978039686</span><span class="p">,</span> <span class="n">rvalue</span><span class="o">=-</span><span class="mf">0.8571336853655246</span><span class="p">,</span> <span class="n">pvalue</span><span class="o">=</span><span class="mf">6.957401776983424e-07</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="mf">0.3289675081083341</span><span class="p">,</span> <span class="n">intercept_stderr</span><span class="o">=</span><span class="mf">0.09084907311224924</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Reduced :math:`chi^2` error:</strong></p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">residual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">slope</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">intercept</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span><span class="n">residual</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="p">)))</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">54.571758503185855</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mean_aodapi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">slope</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mean_aodapi</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">intercept</span><span class="p">)</span>
+
+<span class="n">fitname</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;T2 = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">intercept</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;(AODAPI/100)$^{&#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">slope</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;}$&#39;</span>
+</pre></div>
+</div>
+<p><strong>Compute upper and lower bounds of the fit using 95% CI of the fit
+parameters.</strong></p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tinv</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">df</span><span class="p">))</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">tinv</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span><span class="n">dof</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+
+<span class="n">s_err</span> <span class="o">=</span> <span class="n">ts</span><span class="o">*</span><span class="n">result</span><span class="o">.</span><span class="n">stderr</span>
+<span class="n">i_err</span> <span class="o">=</span> <span class="n">ts</span><span class="o">*</span><span class="n">result</span><span class="o">.</span><span class="n">intercept_stderr</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">s_err</span><span class="p">,</span><span class="n">i_err</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">2.0930240544082634</span>
+<span class="mf">0.6885369075894887</span> <span class="mf">0.19014929534463265</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s_up</span><span class="p">,</span> <span class="n">i_up</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">slope</span> <span class="o">+</span> <span class="n">s_err</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">intercept</span> <span class="o">-</span> <span class="n">i_err</span>
+<span class="n">s_low</span><span class="p">,</span> <span class="n">i_low</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">slope</span> <span class="o">-</span> <span class="n">s_err</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">intercept</span> <span class="o">+</span> <span class="n">i_err</span>
+
+<span class="n">t2_up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">s_up</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mean_aodapi</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="n">i_up</span><span class="p">)</span>
+<span class="n">t2_low</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">s_low</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mean_aodapi</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="n">i_low</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">studies</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Study1&#39;</span><span class="p">,</span><span class="s1">&#39;Study3&#39;</span><span class="p">,</span><span class="s1">&#39;Study4&#39;</span><span class="p">,</span><span class="s1">&#39;Study5&#39;</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+
+<span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;sans-serif&#39;</span>
+<span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.sans-serif&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Times New Roman&#39;</span><span class="p">]</span>
+
+<span class="n">color_list</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Study1&#39;</span><span class="p">:</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="s1">&#39;Study3&#39;</span><span class="p">:</span><span class="s1">&#39;green&#39;</span><span class="p">,</span><span class="s1">&#39;Study4&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">,</span><span class="s1">&#39;Study5&#39;</span><span class="p">:</span><span class="s1">&#39;m&#39;</span><span class="p">}</span>
+
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">studies</span><span class="p">:</span>
+    <span class="n">labelname</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Study&#39;</span><span class="p">,</span><span class="s1">&#39;Study &#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">aodapis</span><span class="p">[</span><span class="n">s</span><span class="o">+</span><span class="s1">&#39;_AODAPI&#39;</span><span class="p">],</span><span class="n">t2s</span><span class="p">[</span><span class="n">s</span><span class="o">+</span><span class="s1">&#39;_T2&#39;</span><span class="p">],</span><span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span><span class="n">ms</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">color_list</span><span class="p">[</span><span class="n">s</span><span class="p">],</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">labelname</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mean_aodapi</span><span class="p">,</span><span class="n">t2</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;#880000&#39;</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">fitname</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">mean_aodapi</span><span class="p">,</span><span class="n">t2_up</span><span class="p">,</span><span class="n">t2_low</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;#880000&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;AODAPI Viability (%)&#39;</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span><span class="n">labelpad</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Inflection point, T2 (h)&#39;</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span><span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span><span class="n">labelpad</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">400</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span><span class="s1">&#39;family&#39;</span><span class="p">:</span><span class="s1">&#39;Times New Roman&#39;</span><span class="p">},</span><span class="n">markerscale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">handlelength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="_images/output_12_0.png" src="_images/output_12_0.png" />
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Plot_inflection_points.html"
+                        title="previous chapter">Analysis of inflection points</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="functions.html"
+                        title="next chapter">functions</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/AODAPI_T2.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="functions.html" title="functions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Plot_inflection_points.html" title="Analysis of inflection points"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ProVia 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">AODAPI viability and inflection points</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Swarnavo Sarkar.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.1.1.
+    </div>
+  </body>
+</html>
