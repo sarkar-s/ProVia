@@ -148,15 +148,80 @@ parameters.**
     
     plt.xticks(size=22)
     plt.yticks(size=22)  
-    plt.xlabel(r'AODAPI Viability (%)',size=22,labelpad=10)
+    plt.xlabel(r'AO/DAPI Viability (%)',size=22,labelpad=10)
     plt.ylabel(r'Inflection point, T2 (h)',size=22,rotation=90,labelpad=10)
     plt.xlim(60,100)
     plt.ylim(0,400)
     plt.legend(frameon=False,prop={'size': 16,'family':'Times New Roman'},markerscale=1.0,handlelength=1.0,loc='upper right')
     plt.tight_layout()
+    
+    plt.savefig('AODAPI_day1.png',dpi=300)
 
 
 
 .. image:: output_12_0.png
+
+
+**AO/DAPI Day 0 viability.**
+
+.. code:: ipython3
+
+    aodapi_T2_d0 = pd.read_csv('AODAPI-T2paired-Day0.csv')
+    
+    column_names = list(aodapi_T2_d0)
+    
+    aodapis_d0, t2s_d0 = {}, {}
+    
+    for c in column_names:
+        if 'T2' in c:
+            t2s_d0[c] = [round(x,2) for x in aodapi_T2_d0[c] if math.isnan(x) == False]
+            print(c,'\t',t2s_d0[c])
+            
+        if 'AODAPI' in c:
+            aodapis_d0[c] = [round(x,2) for x in aodapi_T2_d0[c] if math.isnan(x) == False]
+            print(c,'\t',aodapis_d0[c])
+
+
+.. parsed-literal::
+
+    Study1_AODAPI 	 [96.59, 94.2, 94.84, 93.06, 92.93, 95.44]
+    Study1_T2 	 [74.93, 122.59, 104.11, 164.45, 150.77, 193.53]
+    Study3_AODAPI 	 [97.86, 97.59, 97.94, 97.43, 97.78, 96.09]
+    Study3_T2 	 [102.31, 80.83, 85.02, 126.79, 147.27, 178.04]
+    Study4_AODAPI 	 [97.37, 96.14, 93.89, 93.66]
+    Study4_T2 	 [93.02, 113.0, 193.43, 212.21]
+    Study5_AODAPI 	 [95.8, 92.53, 95.82, 94.37]
+    Study5_T2 	 [71.64, 72.14, 159.66, 190.13]
+
+
+.. code:: ipython3
+
+    studies = ['Study1','Study3','Study4','Study5']
+    
+    fig, axs = plt.subplots(figsize=(7,6))
+    
+    rcParams['font.family'] = 'sans-serif'
+    rcParams['font.sans-serif'] = ['Times New Roman']
+    
+    color_list = {'Study1':'blue','Study3':'green','Study4':'black','Study5':'m'}
+    
+    for s in studies:
+        labelname = s.replace('Study','Study ')
+        plt.plot(aodapis_d0[s+'_AODAPI'],t2s_d0[s+'_T2'],marker='o',ms=8,color=color_list[s],alpha=0.7,linewidth=0,label=labelname)
+    
+    plt.xticks(size=22)
+    plt.yticks(size=22)  
+    plt.xlabel(r'AO/DAPI Viability (%)',size=22,labelpad=10)
+    plt.ylabel(r'Inflection point, T2 (h)',size=22,rotation=90,labelpad=10)
+    plt.xlim(60,100)
+    plt.ylim(0,400)
+    plt.legend(frameon=False,prop={'size': 16,'family':'Times New Roman'},markerscale=1.0,handlelength=1.0,loc='upper left')
+    plt.tight_layout()
+    
+    plt.savefig('AODAPI_day0.png',dpi=300)
+
+
+
+.. image:: output_15_0.png
 
 
