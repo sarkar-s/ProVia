@@ -3,13 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ProVia's documentation!
-==================================
+Welcome to ProVia's documentation
+=================================
 
 ProVia contains python codes to compute information transfer through central dogma reactions as a function of the central dogma rates constants.
 
-:Author:
-   Swarnavo Sarkar
+Please cite the following reference if you are using parts of this package:
+
+Laura Pierce, Hidayah Anderson, Steven Bauer, Swarnavo Sarkar, Sumona Sarkar. *Evaluating the applicability of cell viability measurements for monitoring cell proliferation* (2022)
+
 
 .. toctree::
    :maxdepth: 3
