@@ -181,7 +181,7 @@ def fit_data(data,param1,param2):
 
     return result
 
-def goodness_of_fit(data,param1,param2,a,b):
+def reduced_chi_square(data,param1,param2,a,b):
     """Computes the reduced :math:`\chi^2` error for the linear fit: :math:`[param2] = a[param1] + b`.
 
     Parameters
@@ -210,9 +210,6 @@ def goodness_of_fit(data,param1,param2,a,b):
     r = 0
     n = 0
 
-    f_obs = []
-    f_exp = []
-
     for s in data.keys():
         y = a*data[s][param1] + b
 
@@ -225,3 +222,47 @@ def goodness_of_fit(data,param1,param2,a,b):
     r_chi = math.sqrt((r/(n-2)))
 
     return r_chi
+
+def pearson_chi_square(data,param1,param2,a,b):
+    """Computes the chi-squared test for the linear fit: :math:`[param2] = a[param1] + b`.
+
+    Parameters
+    ----------
+    data: dataframe
+        Dataframe containing the treatment time and inflection point values.
+
+    param1: string
+        Input variable name.
+
+    param2: string
+        Output variable name.
+
+    a: float
+        Slope of the linear relationship.
+
+    b: float
+        Intercept of the linear relationship.
+
+    Returns
+    -------
+    chi2: float
+        Chi-square test of the linear relationship between param1 and param2.
+
+    pvalue: float
+        Reduced chi-square of the linear relationship between param1 and param2.
+    """
+
+    r = 0
+    n = 0
+
+    f_obs = []
+    f_exp = []
+
+    for s in data.keys():
+        f_exp += list(a*data[s][param1] + b)
+
+        f_obs += data[s][param2].to_list()
+
+    chisq, p = st.chisquare(f_obs,f_exp=f_exp)
+
+    return chisq, p
