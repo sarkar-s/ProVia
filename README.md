@@ -6,4 +6,4 @@ A collection of jupyter notebooks to analyze cell proliferation and viability me
 N = k e^{-e^{a-bt}}
 ```
 
-![Gompertz curves](./docs/gompertz-demo.png =150x) 
+<img src="./docs/gompertz-demo.png" width="400" align="center">
