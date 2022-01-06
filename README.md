@@ -5,3 +5,5 @@ A collection of jupyter notebooks to analyze cell proliferation and viability me
 ```math
 N = k e^{-e^{a-bt}}
 ```
+
+$$x=\sqrt{2}$$
