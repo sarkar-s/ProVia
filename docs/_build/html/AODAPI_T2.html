@@ -16,7 +16,7 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="functions" href="functions.html" />
+    <link rel="next" title="ATP viability and inflection points" href="ATP_T2.html" />
     <link rel="prev" title="Analysis of inflection points" href="Plot_inflection_points.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -29,7 +29,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="functions.html" title="functions"
+          <a href="ATP_T2.html" title="ATP viability and inflection points"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="Plot_inflection_points.html" title="Analysis of inflection points"
@@ -56,11 +56,13 @@
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">t</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rcParams</span>
+
+<span class="kn">import</span> <span class="nn">random</span> <span class="k">as</span> <span class="nn">rand</span>
 </pre></div>
 </div>
 <p><strong>Read viability and T2 inflection points</strong></p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-<span class="n">data_directory</span> <span class="o">=</span> <span class="s1">&#39;./data/&#39;</span>
+<span class="n">data_directory</span> <span class="o">=</span> <span class="s1">&#39;./data/AODAPI&#39;</span>
 <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">data_directory</span><span class="p">)</span>
 
 <span class="n">aodapi_T2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;AODAPI-T2paired-Day1.csv&#39;</span><span class="p">)</span>
@@ -114,7 +116,9 @@
 <p><strong>Reduced :math:`chi^2` error:</strong></p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">residual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">slope</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">intercept</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span><span class="n">residual</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="p">)))</span>
+<span class="n">reduced_chi2</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span><span class="n">residual</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">reduced_chi2</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">54.571758503185855</span>
@@ -130,16 +134,9 @@
 parameters.</strong></p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tinv</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">df</span><span class="p">))</span>
 <span class="n">ts</span> <span class="o">=</span> <span class="n">tinv</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span><span class="n">dof</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
 
 <span class="n">s_err</span> <span class="o">=</span> <span class="n">ts</span><span class="o">*</span><span class="n">result</span><span class="o">.</span><span class="n">stderr</span>
 <span class="n">i_err</span> <span class="o">=</span> <span class="n">ts</span><span class="o">*</span><span class="n">result</span><span class="o">.</span><span class="n">intercept_stderr</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">s_err</span><span class="p">,</span><span class="n">i_err</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">2.0930240544082634</span>
-<span class="mf">0.6885369075894887</span> <span class="mf">0.19014929534463265</span>
 </pre></div>
 </div>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s_up</span><span class="p">,</span> <span class="n">i_up</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">slope</span> <span class="o">+</span> <span class="n">s_err</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">intercept</span> <span class="o">-</span> <span class="n">i_err</span>
@@ -245,8 +242,8 @@ parameters.</strong></p>
   <p class="topless"><a href="Plot_inflection_points.html"
                         title="previous chapter">Analysis of inflection points</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="functions.html"
-                        title="next chapter">functions</a></p>
+  <p class="topless"><a href="ATP_T2.html"
+                        title="next chapter">ATP viability and inflection points</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -278,7 +275,7 @@ parameters.</strong></p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="functions.html" title="functions"
+          <a href="ATP_T2.html" title="ATP viability and inflection points"
              >next</a> |</li>
         <li class="right" >
           <a href="Plot_inflection_points.html" title="Analysis of inflection points"

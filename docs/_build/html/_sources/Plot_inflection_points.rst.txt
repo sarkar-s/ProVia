@@ -73,17 +73,6 @@ inflection points.
     
     s_err = ts*res.stderr
     i_err = ts*res.intercept_stderr
-    
-    res
-
-
-
-
-.. parsed-literal::
-
-    LinregressResult(slope=5.023194806546836, intercept=29.70445101576523, rvalue=0.9613495754354037, pvalue=2.1944412526757792e-16, stderr=0.2821412886107889, intercept_stderr=6.409461651055753)
-
-
 
 .. code:: ipython3
 
@@ -95,7 +84,7 @@ inflection points.
     
     r_text = r'$\mathrm{R}^2 = ' + str(round(res.rvalue**2,3)) + '$'
     
-    reduced_chi = functions.goodness_of_fit(inflection_points,'CT','T1',res.slope,res.intercept)
+    reduced_chi = functions.reduced_chi_square(inflection_points,'CT','T1',res.slope,res.intercept)
     
     reduced_chi_text = r'$\sqrt{\mathrm{Reduced} \; \chi^2}$ = '+str(round(reduced_chi,2))+' h'
 
@@ -114,17 +103,19 @@ inflection points.
     
     plt.plot(x,y,linewidth=4,color='#880000',alpha=0.5,label=fitname)
     
-    plt.text(55,100,r_text,fontsize=17)
-    plt.text(40,60,reduced_chi_text,fontsize=17)
+    plt.text(55,110,r_text,fontsize=22)
+    plt.text(35,60,reduced_chi_text,fontsize=22)
         
     plt.xticks(size=22)
     plt.yticks(size=22)  
     plt.xlabel(r'Treatment time, $\mathrm{T_H}$ (h)',size=22,labelpad=10)
     plt.ylabel(r'Inflection point, T1 (h)',size=22,rotation=90,labelpad=10)
-    plt.xlim(-5,80)
+    plt.xlim(-2,80)
     plt.ylim(0,500)
     plt.legend(frameon=False,prop={'size': 17,'family':'Times New Roman'},markerscale=1.25,handlelength=1.0,loc='upper left')
     plt.tight_layout()
+    
+    plt.savefig('THT1.png',dpi=300)
 
 
 
@@ -150,7 +141,7 @@ inflection points.
     
     r_text = r'$\mathrm{R}^2 = ' + str(round(res.rvalue**2,3)) + '$'
     
-    reduced_chi = functions.goodness_of_fit(inflection_points,'CT','T2',res.slope,res.intercept)
+    reduced_chi = functions.reduced_chi_square(inflection_points,'CT','T2',res.slope,res.intercept)
     
     reduced_chi_text = r'$\sqrt{\mathrm{Reduced} \; \chi^2}$ = '+str(round(reduced_chi,2))+' h'
 
@@ -169,17 +160,18 @@ inflection points.
     
     plt.plot(x,y,linewidth=4,color='#880000',alpha=0.5,label=fitname)
     
-    plt.text(55,100,r_text,fontsize=17)
-    plt.text(40,60,reduced_chi_text,fontsize=17)
+    plt.text(55,110,r_text,fontsize=22)
+    plt.text(35,60,reduced_chi_text,fontsize=22)
         
     plt.xticks(size=22)
     plt.yticks(size=22)  
     plt.xlabel(r'Treatment time, $\mathrm{T_H}$ (h)',size=22,labelpad=10)
     plt.ylabel(r'Inflection point, T2 (h)',size=22,rotation=90,labelpad=10)
-    plt.xlim(-5,80)
+    plt.xlim(-2,80)
     plt.ylim(0,500)
     plt.legend(frameon=False,prop={'size': 17,'family':'Times New Roman'},markerscale=1.25,handlelength=1.0,loc='lower right')
     plt.tight_layout()
+    plt.savefig('THT2.png',dpi=300)
 
 
 
@@ -205,7 +197,7 @@ inflection points.
     
     r_text = r'$\mathrm{R}^2 = ' + str(round(res.rvalue**2,3)) + '$'
     
-    reduced_chi = functions.goodness_of_fit(inflection_points,'T1','T2',res.slope,res.intercept)
+    reduced_chi = functions.reduced_chi_square(inflection_points,'T1','T2',res.slope,res.intercept)
     
     reduced_chi_text = r'$\sqrt{\mathrm{Reduced} \; \chi^2}$ = '+str(round(reduced_chi,2))+' h'
 
@@ -234,6 +226,7 @@ inflection points.
     plt.ylim(0,500)
     plt.legend(frameon=False,prop={'size': 17,'family':'Times New Roman'},markerscale=1.25,handlelength=1.0,loc='lower right')
     plt.tight_layout()
+    plt.savefig('T1T2.png',dpi=300)
 
 
 

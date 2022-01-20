@@ -7,6 +7,7 @@ from scipy.optimize import fsolve
 from scipy.stats import gamma
 import scipy.stats as st
 import sys
+from iminuit import cost,Minuit
 
 t_factor_table = {}
 t_factor_table[1] = 12.706
@@ -210,6 +211,8 @@ def reduced_chi_square(data,param1,param2,a,b):
     r = 0
     n = 0
 
+    all_y = []
+
     for s in data.keys():
         y = a*data[s][param1] + b
 
@@ -219,7 +222,9 @@ def reduced_chi_square(data,param1,param2,a,b):
 
         n += len(data[s][param1])
 
-    r_chi = math.sqrt((r/(n-2)))
+        all_y += data[s][param2].to_list()
+
+    r_chi = math.sqrt((r/((n-2))))
 
     return r_chi
 
@@ -266,3 +271,31 @@ def pearson_chi_square(data,param1,param2,a,b):
     chisq, p = st.chisquare(f_obs,f_exp=f_exp)
 
     return chisq, p
+
+def lsq(data,param1,param2):
+    x = []
+    y = []
+
+    for s in data.keys():
+        x += data[s][param1].to_list()
+        y += data[s][param2].to_list()
+
+    x = np.array(x)
+    y = np.array(y)
+
+    def model(x,a,b):
+        return a*x + b
+
+    c = cost.LeastSquares(x,y,1.0,model)
+
+    m = Minuit(c, a=0, b=0)
+
+    m.migrad()  # run optimiser
+
+    #m.hesse()   # run covariance estimator
+
+    print(m)
+
+    print(m.FCN)
+
+    return m.params[0], m.params[1]

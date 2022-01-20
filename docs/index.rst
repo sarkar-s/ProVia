@@ -10,7 +10,7 @@ ProVia contains python codes to compute information transfer through central dog
 
 Please cite the following reference if you are using parts of this package:
 
-Laura Pierce, Hidayah Anderson, Steven Bauer, Swarnavo Sarkar, Sumona Sarkar. *Evaluating the applicability of cell viability measurements for monitoring cell proliferation* (2022)
+Laura Pierce, Hidayah Anderson, Steven Bauer, Swarnavo Sarkar, Sumona Sarkar. *Evaluating the applicability of cell viability measurements for monitoring cell proliferation* (2022).
 
 
 .. toctree::
@@ -20,6 +20,7 @@ Laura Pierce, Hidayah Anderson, Steven Bauer, Swarnavo Sarkar, Sumona Sarkar. *E
    Create_Gompertz_fits.ipynb
    Plot_inflection_points.ipynb
    AODAPI_T2.ipynb
+   ATP_T2.ipynb
    functions
 
 .. toctree::

@@ -13,13 +13,15 @@ AODAPI viability and inflection points
     from scipy.stats import t
     import matplotlib.pyplot as plt
     from matplotlib import rcParams
+    
+    import random as rand
 
 **Read viability and T2 inflection points**
 
 .. code:: ipython3
 
     cwd = os.getcwd()
-    data_directory = './data/'
+    data_directory = './data/AODAPI'
     os.chdir(data_directory)
     
     aodapi_T2 = pd.read_csv('AODAPI-T2paired-Day1.csv')
@@ -83,7 +85,9 @@ AODAPI viability and inflection points
 
     residual = np.exp(result.slope*np.log(x) + result.intercept) - y
     
-    print(math.sqrt(np.dot(residual,residual)/(x.shape[0]-2)))
+    reduced_chi2 = math.sqrt(np.dot(residual,residual)/(x.shape[0]-2))
+    
+    print(reduced_chi2)
 
 
 .. parsed-literal::
@@ -105,19 +109,9 @@ parameters.**
 
     tinv = lambda p, df: abs(t.ppf(p/2,df))
     ts = tinv(0.05,dof)
-    print(ts)
     
     s_err = ts*result.stderr
     i_err = ts*result.intercept_stderr
-    
-    print(s_err,i_err)
-
-
-.. parsed-literal::
-
-    2.0930240544082634
-    0.6885369075894887 0.19014929534463265
-
 
 .. code:: ipython3
 
