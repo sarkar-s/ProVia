@@ -36,10 +36,3 @@ ProVia contains jupyter notebooks and modules to fit cell proliferation data wit
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
