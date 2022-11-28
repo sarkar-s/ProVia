@@ -76,7 +76,8 @@ relationship between the two inflection points.**
     tinv = lambda p, df: abs(t.ppf(p/2,df))
     ts = tinv(0.05,dof)
 
-**Relationship between :math:`\mathrm{T_H}` and :math:`\mathrm{T1}`.**
+**Relationship between** :math:`\mathrm{T_H}` **and**
+:math:`\mathrm{T1}`.
 
 .. code:: ipython3
 
@@ -185,7 +186,8 @@ relationship between the two inflection points.**
 .. image:: output_13_2.png
 
 
-**Relationship between :math:`\mathrm{T_H}` and :math:`\mathrm{T2}`.**
+**Relationship between** :math:`\mathrm{T_H}` **and**
+:math:`\mathrm{T2}`.
 
 .. code:: ipython3
 
