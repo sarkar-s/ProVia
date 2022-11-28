@@ -3,8 +3,7 @@ Analysis of inflection points
 
 **Determines the relationship between treatment time**
 :math:`\mathrm{T_H}` **and the two inflection point times,**
-:math:`\mathrm{T1}` **and** :math:`\mathrm{T2}` **, and also the
-relationship between the two inflection points.**
+:math:`\mathrm{T1}` **and** :math:`\mathrm{T2}` .
 
 .. code:: ipython3
 
