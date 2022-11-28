@@ -19,7 +19,7 @@ ProVia contains jupyter notebooks and modules to fit cell proliferation data wit
 :References:
  Please cite the following reference if you are using parts of this package:
 
- *Laura Pierce, Hidayah Anderson, Steven Bauer, Swarnavo Sarkar, Sumona Sarkar. Approach for establishing fit-for-purpose cell viability measurements that are sensitive to proliferative capacity in a model system (2022).*
+ *Laura Pierce, Hidayah Anderson, Swarnavo Sarkar, Steven Bauer, Sumona Sarkar. Approach for establishing fit-for-purpose cell viability measurements that are sensitive to proliferative capacity in a model system (2022).*
 
 .. toctree::
    :maxdepth: 3
