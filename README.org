@@ -4,7 +4,7 @@ Documentation: https://provia.readthedocs.io/en/latest/
 
 ProVia is a collection of python jupyter notebooks to fit cell proliferation data using the Gompertz model and analysis the sensitivity of cell viability assays.
 
-If you are using any part of ProVia, please cite: Laura Pierce, Hidayah Anderson, Steven Bauer, Swarnavo Sarkar, Sumona Sarkar. Approach for establishing fit-for-purpose cell viability measurements that are sensitive to proliferative capacity in a model system (2022).
+If you are using any part of ProVia, please cite: Laura Pierce, Hidayah Anderson, Swarnavo Sarkar, Steven Bauer, Sumona Sarkar. Approach for establishing fit-for-purpose cell viability measurements that are sensitive to proliferative capacity in a model system (2022).
 
 ** Python Dependencies:
    ~ProVia~ needs the following libraries:
