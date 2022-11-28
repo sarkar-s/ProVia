@@ -6,12 +6,20 @@
 Welcome to ProVia's documentation
 =================================
 
-ProVia contains python codes to compute information transfer through central dogma reactions as a function of the central dogma rates constants.
+ProVia contains jupyter notebooks and modules to fit cell proliferation data with Gompertz model and evaluate the sensitivity of various cell viability assays to proliferation.
 
-Please cite the following reference if you are using parts of this package:
+.. image:: ./gompertz-demo.png
+  :width: 550
+  :align: center
+  :alt: Gompertz model demo
 
-Laura Pierce, Hidayah Anderson, Steven Bauer, Swarnavo Sarkar, Sumona Sarkar. *Evaluating the applicability of cell viability measurements for monitoring cell proliferation* (2022).
+:Download:
+ `github.com/sarkar-s/ProVia <https://github.com/sarkar-s/ProVia.git>`_
 
+:References:
+ Please cite the following reference if you are using parts of this package:
+
+ *Laura Pierce, Hidayah Anderson, Steven Bauer, Swarnavo Sarkar, Sumona Sarkar. Approach for establishing fit-for-purpose cell viability measurements that are sensitive to proliferative capacity in a model system (2022).*
 
 .. toctree::
    :maxdepth: 3
@@ -19,15 +27,15 @@ Laura Pierce, Hidayah Anderson, Steven Bauer, Swarnavo Sarkar, Sumona Sarkar. *E
 
    Create_Gompertz_fits.ipynb
    Plot_inflection_points.ipynb
-   AODAPI_T2.ipynb
-   ATP_T2.ipynb
+   AODAPI_vs_T2-from-proliferation.ipynb
+   cytotoxicity-vs-T2-from-AODAPI.ipynb
+   Annexin-vs-T2-from-AODAPI.ipynb
+   ATP-vs-T2-from-AODAPI.ipynb
    functions
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
-
 
 Indices and tables
 ==================
