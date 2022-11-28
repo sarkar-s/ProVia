@@ -11,4 +11,5 @@ If you are using any part of ProVia, please cite: Laura Pierce, Hidayah Anderson
    - ~pandas~
    - ~numpy~
    - ~scipy~
+   - ~matplotlib~
    - ~scikit-learn~
