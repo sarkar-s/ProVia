@@ -6,7 +6,10 @@
 Welcome to ProVia's documentation
 =================================
 
-ProVia contains jupyter notebooks and modules to fit cell proliferation data with Gompertz model and evaluate the sensitivity of various cell viability assays to proliferation.
+ProVia contains jupyter notebooks and modules for the following sets of data analysis using cell proliferation and cell viability data.
+1) Fit cell proliferation data with Gompertz model to extract the inflection points during proliferation.
+2) Determine the sensitivity of cell viability assays to the proliferation inflection points.
+3) Proliferation.
 
 .. image:: ./gompertz-demo.png
   :width: 550
