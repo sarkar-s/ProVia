@@ -7,11 +7,13 @@ Welcome to ProVia's documentation
 =================================
 
 ProVia contains jupyter notebooks and modules for the following sets of data analysis using cell proliferation and cell viability data.
+
 #. Fit cell proliferation data with Gompertz model to extract the inflection points during proliferation.
 #. Determine the sensitivity of cell viability assays to the proliferation inflection points.
 #. Area Under the Curve (AUC) analysis for each viability assay for a changing interval of inflection points.
 
 The current version of ProVia uses the data from the following cell viability assays:
+
 #. AO/DAPI % viability for membrane integrity.
 #. LDH cytotoxicity.
 #. Annexin and PI staining for apoptosis.
